@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horoscope Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="pic/gdsc.png" alt="GDSC Logo" id="logo">
+            <h1 id="title">Daily Horoscope</h1>
+            <select id="language-select" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="th">ภาษาไทย</option>
+            </select>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <h2 id="sub-title">Enter your Date of Birth</h2>
+            <div>
+                <select id="day">
+                    <option value="">Day</option>
+                    <!-- Create day options dynamically in JavaScript -->
+                </select>
+                <select id="month">
+                    <option value="">Month</option>
+                    <!-- Create month options dynamically in JavaScript -->
+                </select>
+                <select id="year">
+                    <option value="">Year</option>
+                    <!-- Create year options dynamically in JavaScript -->
+                </select>
+            </div>
+
+            <h2 id="select-horoscope-type">What would you like to know about?</h2>
+            <input type="text" id="horoscope-topic" placeholder="Type anything...">
+            <button onclick="getHoroscope()" id="horoscope-btn">Get Horoscope</button>
+        </div>
+        
+        <div id="result-container" class="container">
+            <div id="result"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Horoscope Website</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
