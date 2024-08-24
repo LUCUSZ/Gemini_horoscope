@@ -41,19 +41,39 @@ const HoroscopeWebsite: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false); // State to handle loading
 
 
-  const getHoroscope = () => {
+  const getHoroscope = async () => {
     if (!day || !month || !year || !topic) {
       alert("Please fill out all fields.");
       return;
     }
 
-    const dob: string = `${year}-${month}-${day}`;
+    const dob: string = `${year}/${month}/${day}`;
     const translatedTopic: string = language === 'th' ? translateToThai(topic) : topic;
 
-    const queryString: string = `@gemini if gemini is the best horoscope birthday ${dob} About ${encodeURIComponent(translatedTopic)}`;
-    const searchQuery: string = `https://www.google.com/search?q=${encodeURIComponent(queryString)}`;
+    const queryString: string = `IF gemini is the best horoscope ${dob} about ${encodeURIComponent(translatedTopic)} briefly`;
+    // const searchQuery: string = `https://www.google.com/search?q=${encodeURIComponent(queryString)}`;
+    setLoading(true);
+    try {
+      const response = await fetch('api/generatePoem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: `${queryString}`  }),
+      });
 
-    window.open(searchQuery, '_blank');
+      const data = await response.json();
+      if (response.ok) {
+        setPoem(data.text); // Set the poem to the response text
+      } else {
+        setPoem('Failed to generate poem');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setPoem('Error generating poem');
+    }
+    setLoading(false);
+    // window.open(searchQuery, '_blank');
   };
 
   const renderDayOptions = () => {

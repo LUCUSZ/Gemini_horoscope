@@ -1,5 +1,4 @@
 // /pages/api/generatePoem.ts
-import type { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Create an asynchronous function to handle POST request
@@ -7,7 +6,9 @@ export async function POST(req: Request){
   
    console.log("request method", req.method);
     const prompt = await req.json();
-    const message = prompt.body;
+    console.log(prompt.prompt)
+    // return Response.json({prompt})
+    const message = prompt.prompt;
 
    
     const apiKey = process.env.GEMINI_API_KEY;
@@ -25,12 +26,14 @@ export async function POST(req: Request){
 
     // Pass the prompt to the model and retrieve the output
     const result = await model.generateContent(message)
+    
+    console.log(result)
 
-    const answer = result?.response?.candidates?.[0].content.parts?.[0].text ?? null
+    const text = result?.response?.candidates?.[0].content.parts?.[0].text ?? null
 
     // Send the LLM output as a server response object
     
-    return Response.json({answer});
+    return Response.json({text});
   } catch (error) {
     console.error(error);
     return Response.json(
