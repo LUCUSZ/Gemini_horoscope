@@ -1,26 +1,41 @@
 // /pages/api/generatePoem.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
-const { TextGenerationModel } = require('@google/generative-ai');
+import type { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      const model = new TextGenerationModel({
-        apiKey: "AIzaSyCANOr-8VLCuvKEkC9rTUZnX6ooR9ldGiM", // Use your API key from an environment variable
-        modelName: 'gemini-1.5-flash',
-        
-      });
+// Create an asynchronous function to handle POST request
+export async function POST(req: Request){
+  
+   console.log("request method", req.method);
+    const prompt = await req.json();
+    const message = prompt.body;
 
-      const response = await model.generate({
-        prompt: req.body.prompt || "Write a poem about a robot who dreams of being human.",
-      });
+   
+    const apiKey = process.env.GEMINI_API_KEY;
 
-      res.status(200).json({ text: response.text });
-    } catch (error) {
-      console.error('Error generating text:', error);
-      res.status(500).json({ error: 'Failed to generate poem' });
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not defined');
     }
-  } else {  
-    res.status(405).json({ message: 'Method not allowed' });
+
+  try {
+    // Access your API key by creating an instance of GoogleGenerativeAI
+    const genAI = new GoogleGenerativeAI(apiKey);
+
+    // Initialize a generative model
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro-exp-0801' });
+
+    // Pass the prompt to the model and retrieve the output
+    const result = await model.generateContent(message)
+
+    const answer = result?.response?.candidates?.[0].content.parts?.[0].text ?? null
+
+    // Send the LLM output as a server response object
+    
+    return Response.json({answer});
+  } catch (error) {
+    console.error(error);
+    return Response.json(
+      { message: "There might be sth wrong" },
+      { status: 500 },
+    );
   }
 }
